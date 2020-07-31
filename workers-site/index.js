@@ -40,6 +40,10 @@ async function handleEvent(event) {
       options.cacheControl = {
         bypassCache: true,
       }
+    } else {
+      options.cacheControl = {
+        browserTtl: 5 * 60
+      }
     }
 
     const page = await getAssetFromKV(event, options)
@@ -64,7 +68,7 @@ async function handleEvent(event) {
         })
 
         return new Response(notFoundResponse.body, { ...notFoundResponse, status: 404 })
-      } catch (e) {}
+      } catch (e) { }
     }
 
     return new Response(e.message || e.toString(), { status: 500 })
