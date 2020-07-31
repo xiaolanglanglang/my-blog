@@ -42,7 +42,7 @@ async function handleEvent(event) {
       }
     } else {
       options.cacheControl = {
-        browserTtl: 5 * 60
+        browserTTL: 5 * 60
       }
     }
 
