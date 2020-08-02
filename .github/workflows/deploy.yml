@@ -32,8 +32,8 @@ jobs:
       with:
         path: workers-site/node_modules
         key: ${{ runner.os }}-${{ env.cache-name }}-${{ hashFiles('workers-site/package-lock.json') }}
-    - run: npm i 
-    - run: npm run build
+    - run: yarn install
+    - run: yarn run build
     - name: Publish
       uses: cloudflare/wrangler-action@1.2.0
       with:
