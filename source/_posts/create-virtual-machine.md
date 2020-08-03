@@ -1,6 +1,6 @@
 ---
 title: 创建 Ubuntu 虚拟机
-tags: 个人备忘
+tags: [个人备忘, KVM]
 date: 2020-08-03 10:24:30
 ---
 
