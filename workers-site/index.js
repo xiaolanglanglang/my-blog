@@ -1,4 +1,4 @@
-import { getAssetFromKV, mapRequestToAsset } from '@cloudflare/kv-asset-handler'
+import { getAssetFromKV, mapRequestToAsset } from '@xiaolanglanglang/kv-asset-handler'
 
 /**
  * The DEBUG flag will do two things that help during development:
