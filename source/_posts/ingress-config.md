@@ -1,7 +1,12 @@
 ---
 title: K3S 集群的 Ingress 配置
-tags: [Kubernetes, ingress, 个人备忘]
+tags:
+  - Kubernetes
+  - ingress
+  - 个人备忘
+date: 2020-08-10 16:45:50
 ---
+
 
 我使用的是 K3S 搭建的 Kubernetes 集群, 它默认安装了一个 Ingress 工具 treafik , 这里直接使用 treafik 并使用 echo server 来举例说明 Ingress 的配置.
 
