@@ -1,7 +1,12 @@
 ---
 title: Kubernetes 部署 MySQL 应用
-tags: [Kubernetes, MySQL, 个人备忘]
+tags:
+  - Kubernetes
+  - MySQL
+  - 个人备忘
+date: 2020-08-16 19:46:32
 ---
+
 
 我计划将数据库(MySQL)也使用 K8S 来进行部署~~(别问为什么, 可能就是闲的蛋疼吧)~~, 如果使用之前文章中介绍的 NFS 方式({% post_link kubernetes-config-nfs %})来提供持久化卷的话, 可能会有性能问题, 因为我不需要数据库有漂移到其他节点的能力, 所以这里选择使用 ```local``` 的方式.
 
