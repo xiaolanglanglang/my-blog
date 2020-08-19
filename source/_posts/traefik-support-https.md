@@ -1,6 +1,8 @@
 ---
 title: Traefik 添加 HTTPS 支持
 tags: [k3s, Kubernetes, traefik, https, cert-manager, cloudflare, 个人备忘]
+date: 2020-08-17 11:22:26
+updated: 2020-09-19 13:39:00
 ---
 
 在之前的文章中({% post_link ingress-config %}), 我们配置了 echo 服务的 Ingress 入口, 当我们使用 http 进行访问时, 一切正常, 但当使用 https 访问时, 我们会得到一个证书错误的提示. 这篇文章记录了如何使用 cert-manager 来解决 https 提示证书错误的问题.
@@ -124,6 +126,8 @@ kubectl get certificates
 
 # Traefik
 
+## 使用已有的证书
+
 最后, 我们修改 echo 的 Ingress 配置文件, 增加关于 tls 的字段, 完整的配置文件如下:
 
 ```yaml
@@ -144,3 +148,28 @@ spec:
 使用 Chrome 打开 [https://echo.xiaolanglang.net](https://echo.xiaolanglang.net) 网页, 可以发现已经是小绿锁了.
 
 > 当然了, 因为我的网络环境没有 80/443 端口, 所以实际上在公网中访问的是套了一层 Argo Tunnel 的(文章见 {%post_link kubernetes-config-argo-tunnel%}), 这里给 ingress 配置主要是方便做 DNS 劫持, 毕竟内网流量也要走一遍 CDN 也太蛋疼了.
+
+------
+
+2020-08-19 更新:
+
+## 自动签发证书
+
+除了使用已有的证书外, 我们还可以在 Ingress 里指定 issuer 来自动签发证书, 完整的配置文件如下:
+
+```yaml
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: echo
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt"
+spec:
+  backend:
+    serviceName: echo
+    servicePort: http
+  tls:
+  - hosts:
+    - echo.xiaolanglang.net
+    secretName: echo-xiaolanglang-net-certificate
+```

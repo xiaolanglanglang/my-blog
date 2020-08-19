@@ -7,7 +7,7 @@ tags:
   - monitor
   - 个人备忘
 date: 2020-08-09 18:20:12
-updated: 2020-08-19 11:43:10
+updated: 2020-08-19 13:34:10
 ---
 
 # 安装 Kube-Prometheus
@@ -60,6 +60,36 @@ kubectl --namespace monitoring port-forward svc/grafana 3000
 > 注: grafana 默认的用户名和密码均为 ```admin```, 首次进入会要求修改默认密码.
 
 -------
+
+2020-08-19 再次更新:
+
+其实并不需要手动申请证书, 可以使用 annotations 在 Ingress 里直接声明 issuer 来自动自动触发.
+调整后的 yaml 如下:
+
+```yaml
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: monitoring
+  # 添加关于 issuer 的信息
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt"
+spec:
+  rules:
+  - host: grafana.xiaolanglang.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          serviceName: grafana
+          servicePort: 3000
+  tls:
+  - hosts:
+    - grafana.xiaolanglang.net
+    secretName: grafana-xiaolanglang-net-certificate
+```
 
 2020-08-19 更新:
 
