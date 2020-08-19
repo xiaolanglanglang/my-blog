@@ -61,36 +61,6 @@ kubectl --namespace monitoring port-forward svc/grafana 3000
 
 -------
 
-2020-08-19 再次更新:
-
-其实并不需要手动申请证书, 可以使用 annotations 在 Ingress 里直接声明 issuer 来自动自动触发.
-调整后的 yaml 如下:
-
-```yaml
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: grafana
-  namespace: monitoring
-  # 添加关于 issuer 的信息
-  annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt"
-spec:
-  rules:
-  - host: grafana.xiaolanglang.net
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          serviceName: grafana
-          servicePort: 3000
-  tls:
-  - hosts:
-    - grafana.xiaolanglang.net
-    secretName: grafana-xiaolanglang-net-certificate
-```
-
 2020-08-19 更新:
 
 经过一段时间的使用, 我发现每次都这样访问的话, 会非常麻烦, 所以我决定将 grafana 暴露到公网中.
@@ -148,3 +118,34 @@ spec:
 # 使用域名访问
 
 添加好对应的 DNS 信息后, 直接使用 [grafana.xiaolanglang.net](https://grafana.xiaolanglang.net) 就可以访问到 grafana 界面了, 无需再设置端口转发. 使用起来方便多了.
+
+-------
+
+2020-08-19 再次更新:
+
+经过查阅后发现, 实际上并不需要每次都手动申请证书, 只需要在 Ingress 的 annotations 里声明 issuer 就可以自动签发证书. 调整后的 yaml 如下:
+
+```yaml
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: monitoring
+  annotations:
+    # 添加关于 issuer 的信息
+    cert-manager.io/cluster-issuer: "letsencrypt"
+spec:
+  rules:
+  - host: grafana.xiaolanglang.net
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          serviceName: grafana
+          servicePort: 3000
+  tls:
+  - hosts:
+    - grafana.xiaolanglang.net
+    secretName: grafana-xiaolanglang-net-certificate
+```
