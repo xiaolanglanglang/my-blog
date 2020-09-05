@@ -17,6 +17,8 @@ opkg install prometheus-node-exporter-lua-netstat
 opkg install prometheus-node-exporter-lua-nat_traffic
 ```
 
+<!-- more -->
+
 OpenWRT 的 exporter 默认只监听在 loopback 里, 所以我们需要调整配置文件它监听在内网里.
 
 修改 ```/etc/config/prometheus-node-exporter-lua``` 文件, 将 ```listen_interface``` 的值修改为 ```lan```:
