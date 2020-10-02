@@ -5,6 +5,7 @@ tags:
   - ingress
   - 个人备忘
 date: 2020-08-10 16:45:50
+updated: 2020-10-01 22:38:00
 ---
 
 
@@ -92,3 +93,42 @@ spec:
 > 这里没有指定 hostname , 所以它可以处理所有的入站请求.
 
 一个最基本的 Ingress 服务就配置好了. 使用浏览器打开任一 k3s 节点的 IP 地址即可查看 echo server 的响应信息.
+
+有时我们需要获取客户的真实 IP 信息, 但此时我们会发现 echo 服务的真实 IP 为内部的 IP, 我们可以这样调整它:
+
+编辑 ```/var/lib/rancher/k3s/server/manifests/traefik.yaml``` 文件, 在 ```valuesContent``` 中添加 ```externalTrafficPolicy: Local``` 即可.
+
+例如:
+
+```yaml
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: traefik
+  namespace: kube-system
+spec:
+  chart: https://%{KUBERNETES_API}%/static/charts/traefik-1.81.0.tgz
+  valuesContent: |-
+    rbac:
+      enabled: true
+    ssl:
+      enabled: true
+    metrics:
+      prometheus:
+        enabled: true
+    kubernetes:
+      ingressEndpoint:
+        useDefaultPublishedService: true
+    image: "rancher/library-traefik"
+    tolerations:
+      - key: "CriticalAddonsOnly"
+        operator: "Exists"
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: "NoSchedule"
+    externalTrafficPolicy: Local
+```
+
+externalTrafficPolicy 中 Local 和 Cluster (默认) 的区别:
+Local 只会把请求转发到本机的 Pod 中, 所以能保留真实的源 IP, 当本机没有对应的 Pod 时会直接抛弃连接.
+Cluster 可以在转发到其他的节点上运行的 Pod 中, 没有保留真实的源 IP, 当本机没有对应的 Pod 时会将连接转发到其他的节点中.
