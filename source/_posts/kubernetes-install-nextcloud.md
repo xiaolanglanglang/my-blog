@@ -5,6 +5,7 @@ tags:
   - Nextcloud
   - 个人备忘
 date: 2020-08-28 12:12:44
+updated: 2020-10-16 14:13:00
 ---
 
 
@@ -36,7 +37,7 @@ spec:
     storage: 500Gi
   volumeMode: Filesystem
   accessModes:
-  - ReadWriteOnce
+  - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage
   local:
@@ -60,7 +61,7 @@ metadata:
   name: nextcloud-pvc
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   storageClassName: "local-storage"
   resources:
     requests:
@@ -116,16 +117,21 @@ spec:
     spec:
       containers:
       - name: nextcloud
-        image: nextcloud:latest
-        imagePullPolicy: Always
+        image: nextcloud:20
         ports:
         - containerPort: 80
         volumeMounts:
         - name: nextcloud-pv
           mountPath: /var/www/html/
+      - name: nextcloud-cron
+        image: nextcloud:20
+        args:
+        - /cron.sh
+        volumeMounts:
+        - name: nextcloud-pv
+          mountPath: /var/www/html/
       - name: tunnel
-        image: docker.io/cloudflare/cloudflared:2020.8.0
-        imagePullPolicy: Always
+        image: docker.io/cloudflare/cloudflared:2020.10.0
         command: ["cloudflared", "tunnel"]
         args:
         - --url=http://127.0.0.1:80
@@ -143,7 +149,6 @@ spec:
         - mountPath: /etc/cloudflared
           name: tunnel-secret
           readOnly: true
-      terminationGracePeriodSeconds: 60
       volumes:
       - name: tunnel-secret
         secret:
@@ -154,7 +159,7 @@ spec:
       terminationGracePeriodSeconds: 60
 ```
 
-配置文件中使用了两个镜像, 一个就是 Nextcloud , 另一个是 cloudflare 的镜像, 用来提供 argo tunnel 的支撑, 详情见文章 {%post_link kubernetes-config-argo-tunnel%}.
+配置文件中使用了三个容器, 一个是 Nextcloud ,一个是 Nextcloud 的定时任务, 最后一个是 cloudflare 的镜像, 用来提供 argo tunnel 的支撑, 详情见文章 {%post_link kubernetes-config-argo-tunnel%}.
 
 nextcloud-svc.yaml:
 
