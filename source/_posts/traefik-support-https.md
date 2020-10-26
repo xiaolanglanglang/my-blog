@@ -2,7 +2,7 @@
 title: Traefik 添加 HTTPS 支持
 tags: [k3s, Kubernetes, traefik, https, cert-manager, cloudflare, 个人备忘]
 date: 2020-08-17 11:22:26
-updated: 2020-09-19 13:39:00
+updated: 2020-10-26 17:23:26
 ---
 
 在之前的文章中({% post_link ingress-config %}), 我们配置了 echo 服务的 Ingress 入口, 当我们使用 http 进行访问时, 一切正常, 但当使用 https 访问时, 我们会得到一个证书错误的提示. 这篇文章记录了如何使用 cert-manager 来解决 https 提示证书错误的问题.
@@ -131,14 +131,16 @@ kubectl get certificates
 最后, 我们修改 echo 的 Ingress 配置文件, 增加关于 tls 的字段, 完整的配置文件如下:
 
 ```yaml
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: echo
 spec:
-  backend:
-    serviceName: echo
-    servicePort: http
+  defaultBackend:
+    service:
+      name: echo
+      port:
+        name: http
   tls:
   - hosts:
     - echo.xiaolanglang.net
@@ -158,16 +160,18 @@ spec:
 除了使用已有的证书外, 我们还可以在 Ingress 里指定 issuer 来自动签发证书, 完整的配置文件如下:
 
 ```yaml
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: echo
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt"
 spec:
-  backend:
-    serviceName: echo
-    servicePort: http
+  defaultBackend:
+    service:
+      name: echo
+      port:
+        name: http
   tls:
   - hosts:
     - echo.xiaolanglang.net

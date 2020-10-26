@@ -5,7 +5,7 @@ tags:
   - ingress
   - 个人备忘
 date: 2020-08-10 16:45:50
-updated: 2020-10-01 22:38:00
+updated: 2020-10-26 17:21:46
 ---
 
 
@@ -80,14 +80,16 @@ spec:
 echo-ingress.yml
 
 ```yaml
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: echo
 spec:
-  backend:
-    serviceName: echo
-    servicePort: http
+  defaultBackend:
+    service:
+      name: echo
+      port:
+        name: http
 ```
 
 > 这里没有指定 hostname , 所以它可以处理所有的入站请求.
