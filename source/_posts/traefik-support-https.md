@@ -50,7 +50,7 @@ stringData:
 在 Kubernetes 里安装 cert-manager 很简单, 只需要一行命令即可:
 
 ```bash
-kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.16.1/cert-manager.yaml
+kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v1.1.0/cert-manager.yaml
 ```
 
 ## 配置
@@ -58,7 +58,7 @@ kubectl apply -f https://github.com/jetstack/cert-manager/releases/download/v0.1
 我们需要将 cert-manager 使用的签发机构的相关信息配置进 Kubernetes, 配置文件如下:
 
 ```yaml
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
   name: letsencrypt
@@ -82,7 +82,7 @@ spec:
 现在我们来签发一张证书吧! 使用如下的文件来进行证书的签发:
 
 ```yaml
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: echo-xiaolanglang-net-certificate
@@ -100,7 +100,7 @@ spec:
 除了签发单独的证书外,我们还可以签发一张 wildcard 类型的证书, 避免每次添加一个二级域名都需要签发一张证书的痛苦:
 
 ```yaml
-apiVersion: cert-manager.io/v1alpha2
+apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: xiaolanglang-net-wildcard-certificate
