@@ -252,3 +252,15 @@ spec:
 ```
 
 接着重启一下容器, Nextcloud 就完成了所有的部署了.
+
+# 执行 OCC 文件的方法
+
+偶尔会发现需要使用执行 OCC 命令, 但是镜像中并没有 sudo 命令, 所以
+```bash
+sudo -u www-data php occ ...
+```
+这样的命令是无法执行的, 这里只能先用 su 命令切换用户后执行
+```bash
+su -s /bin/bash www-data
+```
+然后再使用 occ 命令处理.
