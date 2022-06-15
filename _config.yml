@@ -86,13 +86,14 @@ pagination_dir: page
 
 # Include / Exclude file(s)
 ## include:/exclude: options only apply to the 'source/' folder
-include:
-exclude:
-ignore:
+include: []
+exclude: []
+ignore: []
 
 # Extensions
 ## Plugins: https://hexo.io/plugins/
-plugins: hexo-generator-sitemap
+plugins: 
+  - hexo-generator-sitemap
 
 ## Themes: https://hexo.io/themes/
 theme: next
