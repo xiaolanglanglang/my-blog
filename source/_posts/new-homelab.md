@@ -53,6 +53,43 @@ sudo zpool import
 sudo zpool import -f <pool_name>
 ```
 
+## 配置网络
+
+因为之后的虚拟机需要一个 bridge 网络，所以需要先配置一下网络，对于 Ubuntu 来说，这个工作是 Netplan 完成的。
+首先需要安装 bridge-utils:
+
+```bash
+sudo apt install bridge-utils
+```
+
+然后编辑配置文件:
+
+```yaml
+# This file is generated from information provided by the datasource.  Changes
+# to it will not persist across an instance reboot.  To disable cloud-init's
+# network configuration capabilities, write a file
+# /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg with the following:
+# network: {config: disabled}
+network:
+  ethernets:
+    enp4s0:
+      dhcp4: false
+  bridges:
+    br0:
+      interfaces: [enp4s0]
+      dhcp4: true
+      macaddress: "XX:XX:XX:XX:XX:XX"
+  version: 2
+```
+
+> 这里的 `macaddress` 是我之前使用的 MAC 地址，为了保持一致，所以指定了 MAC 地址。
+
+最后应用一下配置:
+
+```bash
+sudo netplan apply
+```
+
 # 容器平台
 
 容器平台我选择了 K3S 作为 Kubernetes 集群管理工具，相比于 K8S，K3S 更加轻量，更适合家庭使用<del>(Kubernetes 真的适合家用吗？)</del> 。
@@ -148,7 +185,7 @@ controller:
       - IPv6
 ```
 
-# 安装虚拟化平台
+# 虚拟化平台
 
 这次的虚拟化平台我选择了 KubeVirt 来实现，KubeVirt 是一个 Kubernetes 上的虚拟化平台，可以将虚拟机作为一个 Pod 运行在 Kubernetes 集群中。
 
@@ -186,7 +223,6 @@ sudo install virtctl /usr/local/bin
 
 ```conf
 fs.inotify.max_user_instances=256
-
 net.ipv6.conf.all.use_tempaddr=0
 net.ipv6.conf.default.use_tempaddr=0
 ```
